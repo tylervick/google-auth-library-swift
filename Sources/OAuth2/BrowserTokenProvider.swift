@@ -20,7 +20,7 @@ import Foundation
 import NIOHTTP1
 import TinyHTTPServer
 
-struct Credentials: Codable {
+public struct Credentials: Codable {
   let clientID: String
   let clientSecret: String
   let authorizeURL: String
@@ -154,6 +154,35 @@ public class BrowserTokenProvider: TokenProvider {
       }
       return Token(urlComponents: urlComponents)
     }
+  }
+    
+  func refreshToken() throws -> Token {
+    let sem = DispatchSemaphore(value: 0)
+    let auth_endpoint = "https://oauth2.googleapis.com/token"
+    
+    let body = [
+        "client_id": credentials.clientID,
+        "client_secret": credentials.clientSecret,
+        "refresh_token": token?.RefreshToken,
+        "grant_type": "refresh_token"
+    ]
+    
+    var responseData: Data?
+    
+    Connection.performRequest(method: "POST", urlString: auth_endpoint, parameters: [:], body: try JSONSerialization.data(withJSONObject: body, options: []), authorization: "") {
+        (data, response, error) in
+        responseData = data
+        sem.signal()
+    }
+    
+    _ = sem.wait(timeout: DispatchTime.distantFuture)
+    
+    if let data = responseData {
+        let decoder = JSONDecoder()
+        let token = try! decoder.decode(Token.self, from: data)
+        return token
+    }
+    throw AuthError.unknownError
   }
 
   @available(iOS 10.0, tvOS 10.0, *)
