@@ -179,7 +179,11 @@ public class BrowserTokenProvider: TokenProvider {
     
     if let data = responseData {
         let decoder = JSONDecoder()
+        let refreshToken = token?.RefreshToken
         token = try decoder.decode(Token.self, from: data)
+        if (token?.RefreshToken == nil) {
+            token?.RefreshToken = refreshToken
+        }
     }
   }
 
