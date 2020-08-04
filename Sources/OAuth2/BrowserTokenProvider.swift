@@ -123,7 +123,8 @@ public class BrowserTokenProvider: TokenProvider {
       urlString: credentials.accessTokenURL,
       parameters: parameters,
       body: nil,
-      authorization: authorization
+      authorization: authorization,
+      urlSession: nil
     ) { data, response, _ in
       if let response = response as? HTTPURLResponse {
         for (k, v) in response.allHeaderFields {
@@ -169,8 +170,13 @@ public class BrowserTokenProvider: TokenProvider {
     
     var responseData: Data?
     
-    Connection.performRequest(method: "POST", urlString: auth_endpoint, parameters: [:], body: try JSONSerialization.data(withJSONObject: body, options: []), authorization: "") {
-        (data, response, error) in
+    Connection.performRequest(
+      method: "POST",
+      urlString: auth_endpoint,
+      parameters: [:],
+      body: try JSONSerialization.data(withJSONObject: body, options: []),
+      authorization: "",
+      urlSession: nil) { (data, response, error) in
         responseData = data
         sem.signal()
     }

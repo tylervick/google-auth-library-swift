@@ -68,7 +68,8 @@ public class GoogleRefreshTokenProvider: TokenProvider {
       urlString: accessTokenPath,
       parameters: parameters,
       body: nil,
-      authorization: "") { data, response, _ in
+      authorization: "",
+      urlSession: nil) { data, response, _ in
         responseData = data
         sem.signal()
     }

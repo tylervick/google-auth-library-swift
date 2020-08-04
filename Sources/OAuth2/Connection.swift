@@ -21,9 +21,15 @@ import CryptoSwift
 
 public class Connection {
   public var provider: TokenProvider
-  
-  public init(provider: TokenProvider) {
+  private var urlSession: URLSession?
+
+  public init(provider: TokenProvider, urlSession: URLSession?) {
     self.provider = provider
+    self.urlSession = urlSession
+  }
+
+  convenience public init(provider: TokenProvider) {
+    self.init(provider: provider, urlSession: nil)
   }
   
   public class func performRequest(
@@ -32,6 +38,7 @@ public class Connection {
     parameters: [String: String],
     body: Data!,
     authorization: String,
+    urlSession: URLSession?,
     callback: @escaping (Data?, URLResponse?, Error?) -> Void) {
     
     var urlComponents = URLComponents(string: urlString)!
@@ -59,7 +66,8 @@ public class Connection {
       }
     }
     
-    let session = URLSession(configuration: URLSessionConfiguration.default)
+    let session = urlSession ?? URLSession(configuration: URLSessionConfiguration.default)
+    
     let task: URLSessionDataTask = session.dataTask(with: request) { (data, response, error) -> Void in
       callback(data, response, error)
     }
@@ -86,6 +94,7 @@ public class Connection {
         parameters: parameters,
         body: body,
         authorization: "Bearer " + accessToken,
+        urlSession: self.urlSession,
         callback: callback)
     }
   }
