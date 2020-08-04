@@ -156,7 +156,7 @@ public class BrowserTokenProvider: TokenProvider {
     }
   }
     
-  func refreshToken() throws -> Token {
+  public func refreshToken() throws -> Token {
     let sem = DispatchSemaphore(value: 0)
     let auth_endpoint = "https://oauth2.googleapis.com/token"
     
