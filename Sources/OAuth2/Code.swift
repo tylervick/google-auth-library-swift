@@ -13,7 +13,7 @@
 // limitations under the License.
 import Foundation
 
-class Code {
+public class Code {
   var code: String?
   var state: String?
   var error: String?
