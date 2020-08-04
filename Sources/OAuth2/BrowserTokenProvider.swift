@@ -156,7 +156,7 @@ public class BrowserTokenProvider: TokenProvider {
     }
   }
     
-  public func refreshToken() throws -> Token {
+  public func refreshToken() throws {
     let sem = DispatchSemaphore(value: 0)
     let auth_endpoint = "https://oauth2.googleapis.com/token"
     
@@ -179,10 +179,8 @@ public class BrowserTokenProvider: TokenProvider {
     
     if let data = responseData {
         let decoder = JSONDecoder()
-        let token = try! decoder.decode(Token.self, from: data)
-        return token
+        token = try decoder.decode(Token.self, from: data)
     }
-    throw AuthError.unknownError
   }
 
   @available(iOS 10.0, tvOS 10.0, *)
